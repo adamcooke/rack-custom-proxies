@@ -8,18 +8,19 @@ module RackCustomProxies
     end
   end
 
+  def self.included(base)
+    base.extend ClassMethods
+  end
+end
+
+require 'rack/request'
+Rack::Request.send :include, RackCustomProxies
+
+module Rack::Request::Helpers
   def trusted_proxy?(ip)
     Rack::Request.trusted_proxies.each do |tp|
       return true if tp.include?(ip)
     end
     false
   end
-
-  def self.included(base)
-    base.extend ClassMethods
-  end
-
 end
-
-require 'rack/request'
-Rack::Request.send :include, RackCustomProxies

@@ -19,7 +19,12 @@ Rack::Request.send :include, RackCustomProxies
 module Rack::Request::Helpers
   def trusted_proxy?(ip)
     Rack::Request.trusted_proxies.each do |tp|
-      return true if tp.include?(ip)
+      begin
+        return true if tp.include?(ip)
+      rescue IPAddr::InvalidAddressError
+        # If we get an invalid address, we can just ignore it
+        # and check the next one
+      end
     end
     false
   end
